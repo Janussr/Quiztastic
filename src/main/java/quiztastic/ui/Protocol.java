@@ -2,33 +2,39 @@ package quiztastic.ui;
 
 import quiztastic.app.Quiztastic;
 import quiztastic.core.Category;
+import quiztastic.core.Player;
 import quiztastic.domain.Game;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class Protocol {
-    private static int counter = 0;
+    private static final int counter = 0;
     private final Quiztastic quiz;
-    private final Scanner in;
+    private final BufferedReader in;
     private final PrintWriter out;
+    private final Player player;
 
-    public Protocol(Scanner in, PrintWriter out) {
+    public Protocol(BufferedReader in, PrintWriter out, Player player) {
         this.in = in;
         this.out = out;
+        this.player = player;
         this.quiz = Quiztastic.getInstance();
     }
 
-    private String fetchCommand() {
+    private String fetchCommand() throws IOException {
         out.print("> ");
-        out.flush();
-        String word = in.next(); // answer a100 -> answer
+        String word = in.readLine(); // answer a100 -> answer
         return word;
     }
 
-    public void run() {
+    public void run() throws IOException {
+        try {
+            out.println("Welcome to jeopardy type d for print, h for help");
+            displayBoard();
             String cmd = fetchCommand();
             while (!cmd.equals("quit")) {
                 switch (cmd) {
@@ -42,8 +48,7 @@ public class Protocol {
                         break;
                     case "answer":
                     case "a":
-                        String question = in.next();
-                        in.nextLine();
+                        String question = in.readLine();
                         String a = question.substring(0, 1).toLowerCase(); // "A100" -> "a"
                         int questionScore = Integer.parseInt(question.substring(1)); // "A100" -> 100
                         answerQuestion("abcdef".indexOf(a), questionScore);
@@ -54,22 +59,25 @@ public class Protocol {
                 out.flush();
                 cmd = fetchCommand();
             }
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         }
 
-    private void answerQuestion(int categoryNumber, int questionScore) {
+    private void answerQuestion(int categoryNumber, int questionScore) throws IOException {
         String userAnswer = null;
         Game game = quiz.getCurrentGame();
         List<Integer> scores = List.of(100, 200, 300, 400, 500);
         int questionNumber = scores.indexOf(questionScore);
         out.println(game.getQuestionText(categoryNumber, questionNumber) + "\nEnter answer\n> ");
         out.flush();
-        userAnswer = in.nextLine();
-        if (game.answerQuestion(categoryNumber, questionNumber, userAnswer) == null && userAnswer != null) {
+        userAnswer = in.readLine();
+        if (game.answerQuestion(categoryNumber, questionNumber, userAnswer, player) == null && userAnswer != null) {
             out.println("'" + userAnswer + "' was Correct, congrats cheater\n");
         } else if (userAnswer == null || userAnswer.isEmpty()) {
             out.print("Answer cannot be empty.. pls fix!\n");
         } else {
-            out.println("Correct answer was: " + game.answerQuestion(categoryNumber, questionNumber, userAnswer));
+            out.println("Correct answer was: " + game.answerQuestion(categoryNumber, questionNumber, userAnswer, player));
             out.println("'" + userAnswer + "'   was incorrect, loser, xd\n");
         }
 
@@ -101,7 +109,7 @@ public class Protocol {
                 }
                 out.print("     ");
                 if (game.isAnswered(category, questionNumber)) {
-                    out.print("---   ");
+                    out.print("---     ");
                 } else {
                     out.print(scores.get(questionNumber));
                     out.print("     ");

@@ -2,11 +2,12 @@ package quiztastic.domain;
 
 import quiztastic.core.Board;
 import quiztastic.core.Category;
+import quiztastic.core.Player;
 import quiztastic.core.Question;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Game {
     private final Board board;
@@ -27,14 +28,18 @@ public class Game {
     }
 
 
-    public String answerQuestion(int categoryNumber, int questionNumber, String answer) {
+    public String answerQuestion(int categoryNumber, int questionNumber, String answer, Player player) {
         Question q = getQuestion(categoryNumber, questionNumber);
-        answerList.add(new Answer(categoryNumber, questionNumber, answer));
+        answerList.add(new Answer(categoryNumber, questionNumber, answer, player));
         if (q.getAnswer().equals(answer)) {
             return null;
         } else {
             return q.getAnswer();
         }
+    }
+
+    public Map<Player, Integer> getScore() {
+        return null;
     }
 
     public String getQuestionText(int categoryNumber, int questionNumber) {
@@ -58,11 +63,13 @@ public class Game {
         private final int categoryNumber;
         private final int questionNumber;
         private final String answer;
+        private final Player player;
 
-        private Answer(int categoryNumber, int questionNumber, String answer) {
+        private Answer(int categoryNumber, int questionNumber, String answer, Player player) {
             this.categoryNumber = categoryNumber;
             this.questionNumber = questionNumber;
             this.answer = answer;
+            this.player = player;
         }
 
         public boolean hasIndex(int categoryNumber, int questionNumber) {

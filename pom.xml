@@ -47,7 +47,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                quiztastic.entries.JeopardyServer
+                                WipServer.JeopardyServer
                             </mainClass>
                         </manifest>
                     </archive>

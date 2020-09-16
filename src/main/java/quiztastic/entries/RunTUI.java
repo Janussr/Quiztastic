@@ -7,6 +7,6 @@ import java.util.Scanner;
 
 public class RunTUI {
     public static void main(String[] args) {
-        new Protocol(new Scanner(System.in), new PrintWriter(System.out)).run();
+      //  new Protocol(new Scanner(System.in), new PrintWriter(System.out)).run();
     }
 }
