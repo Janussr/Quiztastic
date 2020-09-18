@@ -11,46 +11,55 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Quiztastic {
+
+
     private static Quiztastic instance;
 
-    public static Quiztastic getInstance() {
+    private static Board createBoardFromFile(String file) {
+        InputStream s = Quiztastic.class.getClassLoader()
+                .getResourceAsStream(file);
+        QuestionReader reader = new QuestionReader(new InputStreamReader(s));
+        MapQuestionRepository repo = null;
+        try {
+            repo = MapQuestionRepository.fromQuestionReader(reader);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return new BoardFactory(repo).makeBoard();
+    }
+
+   public static Quiztastic getInstance() {
         if (instance == null) {
-            InputStream s = Quiztastic.class
-                    .getClassLoader()
-                    .getResourceAsStream("master_season1-35clean.tsv");
-            QuestionReader reader = new QuestionReader(new InputStreamReader(s));
-            try {
-                MapQuestionRepository repo = MapQuestionRepository.fromQuestionReader(reader);
-                Game game = new Game(new BoardFactory(repo).makeBoard(), new ArrayList<>());
-                instance = new Quiztastic(repo, game);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
+            Game danish = new Game(createBoardFromFile("danish_questions.tsv"), new ArrayList<>());
+            Game english = new Game(createBoardFromFile("master_season1-35clean.tsv"), new ArrayList<>());
+            instance = new Quiztastic(Map.of("da", danish, "en", english));
+
         }
         return instance;
     }
 
-    private final QuestionRepository questions;
-    private final Game game;
+    private final Map<String, Game> games;
 
-    private Quiztastic(QuestionRepository questions, Game game) {
-        this.questions = questions;
-        this.game = game;
+    private Quiztastic(Map<String, Game> games) {
+        this.games = games;
     }
 
     public Iterable<Question> getQuestions() {
-        return questions.getQuestions();
+        return null;
     }
 
     public Board getBoard() {
-        return new BoardFactory(questions).makeBoard();
+        return null;
     }
 
-    public Game getCurrentGame() {
-        return game;
+    public Game getCurrentGame(String lang) {
+        return games.get(lang);
     }
+
 }

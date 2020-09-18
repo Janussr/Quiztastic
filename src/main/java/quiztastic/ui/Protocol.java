@@ -17,11 +17,13 @@ public class Protocol {
     private final BufferedReader in;
     private final PrintWriter out;
     private final Player player;
+    private final String language;
 
-    public Protocol(BufferedReader in, PrintWriter out, Player player) {
+    public Protocol(BufferedReader in, PrintWriter out, Player player, String language) {
         this.in = in;
         this.out = out;
         this.player = player;
+        this.language = language;
         this.quiz = Quiztastic.getInstance();
     }
 
@@ -34,6 +36,7 @@ public class Protocol {
     public void run() throws IOException {
         try {
             out.println("Welcome to jeopardy type d for print, h for help");
+            out.flush();
             displayBoard();
             String cmd = fetchCommand();
             while (!cmd.equals("quit")) {
@@ -66,7 +69,7 @@ public class Protocol {
 
     private void answerQuestion(int categoryNumber, int questionScore) throws IOException {
         String userAnswer = null;
-        Game game = quiz.getCurrentGame();
+        Game game = quiz.getCurrentGame(language);
         List<Integer> scores = List.of(100, 200, 300, 400, 500);
         int questionNumber = scores.indexOf(questionScore);
         out.println(game.getQuestionText(categoryNumber, questionNumber) + "\nEnter answer\n> ");
@@ -93,8 +96,7 @@ public class Protocol {
         CategoryIds.add("D.");
         CategoryIds.add("E.");
         CategoryIds.add("F.");
-        Game game = quiz.getCurrentGame();
-
+        Game game = quiz.getCurrentGame(language);
         List<Integer> scores = List.of(100, 200, 300, 400, 500);
         for (Category c : game.getCategories()) {
             counter++;

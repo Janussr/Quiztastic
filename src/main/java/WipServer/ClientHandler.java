@@ -64,14 +64,21 @@ public class ClientHandler implements Runnable {
                                 out.println("this is the help command it helps the player");
                                 break;
                             case "play":
-                                Protocol p = new Protocol(in,out, clientUserName);
-                                serverBroadCast(clientUserName.toString() + " has started a game ");
+                               Protocol p = new Protocol(in,out, clientUserName, "en");
+                               serverBroadCast(clientUserName.toString() + " has started a game ");
                                 p.run();
                                 break;
                             case "players":
                                 out.println("hot gamer babes:" + getPlayersInLobby());
-                            default:
                                 break;
+                            case "spil":
+                                out.println("work in progress");
+                                Protocol po = new Protocol(in,out, clientUserName, "da");
+                                serverBroadCast(clientUserName.toString() + " has started a game ");
+                                po.run();
+                                break;
+                            default:
+
                         }
 
                     }
@@ -120,5 +127,4 @@ public class ClientHandler implements Runnable {
         players.remove(player);
         JeopardyServer.removePlayer(player);
     }
-
 }
