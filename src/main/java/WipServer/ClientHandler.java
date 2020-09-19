@@ -72,7 +72,6 @@ public class ClientHandler implements Runnable {
                                 out.println("hot gamer babes:" + getPlayersInLobby());
                                 break;
                             case "spil":
-                                out.println("work in progress");
                                 Protocol po = new Protocol(in,out, clientUserName, "da");
                                 serverBroadCast(clientUserName.toString() + " has started a game ");
                                 po.run();
